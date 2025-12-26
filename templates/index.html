@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Performance Prediction</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="card">
+    <h2>Student Performance Prediction</h2>
+
+    <form id="predictForm">
+        <label>IAT 1 Marks</label>
+        <input type="number" id="iat1" required>
+
+        <label>IAT 2 Marks</label>
+        <input type="number" id="iat2" required>
+
+        <label>Model Exam Marks</label>
+        <input type="number" id="model_mark" required>
+
+        <label>Previous Year Result</label>
+        <select id="prev_year" required>
+            <option value="3">NIL (First Semester)</option>
+            <option value="0">Poor</option>
+            <option value="1">Average</option>
+            <option value="2">Good</option>
+        </select>
+
+        <button type="submit">Predict</button>
+    </form>
+
+    <div id="result" class="result" style="display:none;">
+        <p><strong>Predicted Performance:</strong> <span id="prediction"></span></p>
+        <p><strong>Recommendation:</strong> <span id="recommendation"></span></p>
+    </div>
+</div>
+
+<script>
+document.getElementById("predictForm").addEventListener("submit", function(e) {
+    e.preventDefault(); // STOP PAGE REFRESH
+
+    fetch("/predict", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            iat1: document.getElementById("iat1").value,
+            iat2: document.getElementById("iat2").value,
+            model_mark: document.getElementById("model_mark").value,
+            prev_year: document.getElementById("prev_year").value
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        document.getElementById("result").style.display = "block";
+        document.getElementById("prediction").innerText = data.prediction;
+        document.getElementById("recommendation").innerText = data.recommendation;
+    });
+});
+</script>
+
+</body>
+</html>
